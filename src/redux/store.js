@@ -38,4 +38,8 @@ export default store = configureStore({
     counter: counterReducer,
     data: dataReducer,
   },
+	middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    immutableCheck: false,
+    serializableCheck: false,
+  })
 });

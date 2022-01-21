@@ -15,10 +15,13 @@ import {TextInput, Button} from 'react-native-paper';
 import CalendarPicker from 'react-native-calendar-picker';
 
 const Home = ({navigation}) => {
-  const dataTemplate = useSelector(state => state.data.dataTemplate);
   let formData = useRef(null);
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
+  const [refresh, onChangeRefresh] = useState(1);
+  const [localArray, onChangeLocalArray] = useState(
+    useSelector(state => state.data.dataTemplate),
+  );
 
   const DisplayData = () => {
     for (const key in formData.current.fields) {
@@ -27,10 +30,15 @@ const Home = ({navigation}) => {
       delete formData.current.fields[key];
     }
 
+    Object.entries(formData.current.fields).map(entry => {
+      let key = entry[0];
+      formData.current.fields[key] = formData.current.fields[key]['value'];
+    });
+
     if (formData.current.fields != null) {
       dispatch(sendFormData(formData.current.fields));
       Alert.alert('Success', 'Data has been posted Successfully');
-      navigation.goBack();
+      onChangeRefresh(refresh + 1);
     }
   };
 
@@ -43,10 +51,11 @@ const Home = ({navigation}) => {
   };
 
   const BuildInputFields = () => {
-    return dataTemplate.map((element, index) => {
+    return localArray.map((element, index) => {
       return (
         <View key={index} style={{paddingHorizontal: 10}}>
-          {element.type === 'Date' ? (
+          {element.Type == 'Edm.DateTimeOffset' ||
+          element.Type == 'Edm.Date' ? (
             <View
               style={{
                 borderBottomWidth: 1,
@@ -55,15 +64,16 @@ const Home = ({navigation}) => {
                 backgroundColor: '#E7E7E7',
                 paddingBottom: 2,
               }}>
-              <Text style={{fontSize: 18, padding: 10}}>{element.title}</Text>
               <TouchableOpacity
                 onPress={() => setShow(!show)}
-                style={{alignItems: 'center'}}>
-                <Text>{show ? 'Close' : 'Open'} Calender</Text>
+                style={{alignItems: 'flex-start'}}>
+                <Text style={{fontSize: 17, fontWeight: '400', padding: 12}}>
+                  {element.Name}
+                </Text>
               </TouchableOpacity>
               {show ? (
                 <View>
-                  <CalendarPicker type="CalendarPicker" name={element.title} />
+                  <CalendarPicker type="CalendarPicker" name={element.Name} />
                 </View>
               ) : (
                 <></>
@@ -71,10 +81,13 @@ const Home = ({navigation}) => {
             </View>
           ) : (
             <TextInput
-              label={element.title}
+              onFocus={() => setShow(false)}
+              label={element.Name}
               type="TextInput"
-              name={element.title}
-              keyboardType={element.type !== 'String' ? 'numeric' : 'default'}
+              name={element.Name}
+              keyboardType={
+                element.Type == 'Edm.String' ? 'default' : 'numeric'
+              }
               style={{marginVertical: 5}}
             />
           )}
@@ -85,42 +98,49 @@ const Home = ({navigation}) => {
 
   return (
     <SafeAreaView>
-      <ScrollView style={StyleSheet.container}>
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingTop: 10,
-          }}>
-          <TouchableOpacity>
-            <Text style={{fontSize: 25, fontWeight: 'bold'}}>Form menu</Text>
-          </TouchableOpacity>
-        </View>
+      <TouchableOpacity
+        onPress={() => {
+          setShow(false);
+        }}>
+        <ScrollView style={StyleSheet.container}>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingTop: 10,
+            }}>
+            <TouchableOpacity>
+              <Text style={{fontSize: 25, fontWeight: 'bold'}}>
+                Contact Form
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-        <Form ref={formData} customFields={customFields}>
-          <View>{BuildInputFields()}</View>
-        </Form>
+          <Form ref={formData} customFields={customFields}>
+            <View>{BuildInputFields()}</View>
+          </Form>
+          <View style={{height: 70}} />
+        </ScrollView>
 
         <Button
           mode="contained"
           onPress={() => DisplayData()}
           style={{
-            padding: 10,
-            width: '60%',
             alignSelf: 'center',
-            margin: 10,
+            position: 'absolute',
+            bottom: 10,
           }}>
-          Submit Data
+          Submit
         </Button>
-      </ScrollView>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'red',
     flex: 1,
+    marginBottom: '10%',
   },
 });
 
