@@ -13,12 +13,12 @@ function Navigation() {
         <Stack.Screen
           name="Welcome"
           component={Welcome}
-          options={{headerShown: false}}
+          options={{headerShown: false, gestureEnabled: false}}
         />
         <Stack.Screen
           name="Home"
           component={Home}
-          options={{headerShown: false}}
+          options={{headerShown: false, gestureEnabled: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>

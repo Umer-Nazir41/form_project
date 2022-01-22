@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {Button} from 'react-native-paper';
-import {useSelector, useDispatch} from 'react-redux';
+import {StyleSheet, View} from 'react-native';
+import {useDispatch} from 'react-redux';
 import {setHeader, updateDataTemplate} from '../redux/reducers/dataReducer';
+import {ActivityIndicator} from 'react-native-paper';
 import Loader from 'react-native-modal-loader';
 import axios from 'axios';
 var parseString = require('react-native-xml2js').parseString;
@@ -77,7 +77,8 @@ const Welcome = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <Loader loading={isLoading} color="#ff66be" />
+      {/* <Loader loading={isLoading} color="#ff66be" opacity="0" size="large" /> */}
+      <ActivityIndicator animating={true} color="#ff66be" size={100} />
       {dataReceived ? navigation.navigate('Home') : <></>}
     </View>
   );

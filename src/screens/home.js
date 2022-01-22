@@ -111,7 +111,7 @@ const Home = ({navigation}) => {
             }}>
             <TouchableOpacity>
               <Text style={{fontSize: 25, fontWeight: 'bold'}}>
-                Contact Form
+                MSDynamics365_DynamicForm
               </Text>
             </TouchableOpacity>
           </View>
