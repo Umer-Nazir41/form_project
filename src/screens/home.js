@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
+  Keyboard,
+  BackHandler,
   Alert,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
@@ -23,7 +25,30 @@ const Home = ({navigation}) => {
     useSelector(state => state.data.dataTemplate),
   );
 
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert('Hold on!', 'Are you sure you want to go Exit?', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {text: 'YES', onPress: () => BackHandler.exitApp()},
+      ]);
+      //BackHandler.exitApp();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
   const DisplayData = () => {
+    Keyboard.dismiss();
     for (const key in formData.current.fields) {
       formData.current.fields[key.replace('null', '')] =
         formData.current.fields[key];
@@ -37,7 +62,6 @@ const Home = ({navigation}) => {
 
     if (formData.current.fields != null) {
       dispatch(sendFormData(formData.current.fields));
-      Alert.alert('Success', 'Data has been posted Successfully');
       onChangeRefresh(refresh + 1);
     }
   };
@@ -111,7 +135,7 @@ const Home = ({navigation}) => {
             }}>
             <TouchableOpacity>
               <Text style={{fontSize: 25, fontWeight: 'bold'}}>
-                MSDynamics365_DynamicForm
+                Create New Contact
               </Text>
             </TouchableOpacity>
           </View>

@@ -29,17 +29,16 @@
 // );
 
 import {configureStore} from '@reduxjs/toolkit';
-import counterReducer from './reducers/counterReducer';
 import dataReducer from './reducers/dataReducer';
 
 //MAIN STORE
 export default store = configureStore({
   reducer: {
-    counter: counterReducer,
     data: dataReducer,
   },
-	middleware: (getDefaultMiddleware) => getDefaultMiddleware({
-    immutableCheck: false,
-    serializableCheck: false,
-  })
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      immutableCheck: false,
+      serializableCheck: false,
+    }),
 });

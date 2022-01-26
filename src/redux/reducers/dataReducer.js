@@ -1,5 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 import axios from 'axios';
+import {Alert} from 'react-native';
 
 let initialState = {
   dataReceived: false,
@@ -86,12 +87,13 @@ export const dataSlice = createSlice({
         if (action.payload[key] == '') {
           delete action.payload[key];
         }
-        if (action.payload['fz_title'] != '') {
+        if (!action.payload['fz_title']) {
+          console.log(action.payload['fz_title']);
           action.payload['fz_title'] = 1;
         }
       }
 
-      console.log(action.payload);
+      //console.log(action.payload);
 
       const URL = 'https://zmssit.crm4.dynamics.com/api/data/v9.1/contacts';
 
@@ -103,8 +105,19 @@ export const dataSlice = createSlice({
         },
         body: JSON.stringify(action.payload),
       })
-        .then(res => console.log(res))
-        .catch(err => console.log(err));
+        .then(res => {
+          if (res.status == 204) {
+            console.log(res),
+              Alert.alert('Success', 'Data has been posted Successfully');
+          } else {
+            console.log(res),
+              Alert.alert('Failed', 'Unable to send data. Please Try again');
+          }
+        })
+        .catch(err => {
+          console.log(err),
+            Alert.alert('Failed', 'Unable to send data. Please Try again');
+        });
     },
   },
 });

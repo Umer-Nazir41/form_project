@@ -18,7 +18,7 @@ function Navigation() {
         <Stack.Screen
           name="Home"
           component={Home}
-          options={{headerShown: false, gestureEnabled: false}}
+          options={{headerShown: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>
