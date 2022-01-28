@@ -16,12 +16,10 @@ import {
 	getAuthToken,
 	getDataField,
 } from '../redux/reducers/dataReducer';
-
-import {} from 'react-native-paper';
-import CalendarPicker from 'react-native-calendar-picker';
 import Form from 'react-native-form';
 import {TextInput, Button, ActivityIndicator} from 'react-native-paper';
-import ListItem from '../components/ListItem';
+import DatePicker from '../components/dateTime/datepicker';
+import {format} from 'date-fns';
 
 const backAction = () => {
 	Alert.alert('Hold on!', 'Are you sure you want to Exit?', [
@@ -36,7 +34,7 @@ const backAction = () => {
 };
 
 var customFields = {
-	CalendarPicker: {
+	DatePicker: {
 		controlled: true,
 		valueProp: 'date',
 		callbackProp: 'onDateChange',
@@ -46,14 +44,10 @@ var customFields = {
 const Home = ({navigation}) => {
 	const formData = useRef(null);
 	const dispatch = useDispatch();
-	const [show, setShow] = useState(false);
-	const [index, setIndex] = useState(undefined);
 	const [refresh, onChangeRefresh] = useState(1);
 	const {authHeader, dataTemplate, isLoading} = useSelector(
 		state => state.data,
 	);
-
-	//console.log(isLoading, dataTemplate);
 
 	useEffect(() => {
 		const backHandler = BackHandler.addEventListener(
@@ -71,22 +65,34 @@ const Home = ({navigation}) => {
 
 	const DisplayData = () => {
 		Keyboard.dismiss();
+		const data = {};
 		for (const key in formData.current.fields) {
-			formData.current.fields[key.replace('null', '')] =
-				formData.current.fields[key];
-			delete formData.current.fields[key];
+			if (
+				formData.current.fields[key].name == 'fz_title' &&
+				formData.current.fields[key].value == ''
+			) {
+				data[formData.current.fields[key].name] = 1;
+			}
+			if (
+				formData.current.fields[key].value == undefined ||
+				formData.current.fields[key].value == ''
+			) {
+				continue;
+			}
+			data[formData.current.fields[key].name] =
+				formData.current.fields[key].value;
+
+			if (formData.current.fields[key].value instanceof Date) {
+				data[formData.current.fields[key].name] = format(
+					formData.current.fields[key].value,
+					'yyyy-MM-dd',
+				).toString();
+			}
 		}
-
-		Object.entries(formData.current.fields).map(entry => {
-			let key = entry[0];
-			formData.current.fields[key] =
-				formData.current.fields[key]['value'];
-		});
-
-		console.log(formData.current.fields);
+		console.log(data);
 
 		if (formData.current.fields != null) {
-			dispatch(sendFormData(formData.current.fields));
+			dispatch(sendFormData(data));
 			onChangeRefresh(refresh + 1);
 		}
 	};
@@ -105,32 +111,30 @@ const Home = ({navigation}) => {
 								backgroundColor: '#E7E7E7',
 								paddingBottom: 2,
 							}}>
-							<TouchableOpacity
-								onPress={() => setShow(!show)}
-								style={{alignItems: 'flex-start'}}>
-								<Text
-									style={{
-										fontSize: 17,
-										fontWeight: '400',
-										padding: 12,
-									}}>
-									{element.Name}
-								</Text>
-							</TouchableOpacity>
-							{show ? (
-								<View>
-									<CalendarPicker
-										type="CalendarPicker"
-										name={element.Name}
-									/>
-								</View>
-							) : (
-								<></>
-							)}
+							<Text
+								style={{
+									fontSize: 17,
+									fontWeight: '400',
+									padding: 12,
+								}}>
+								{element.Name}
+							</Text>
+							<DatePicker
+								name={element.Name}
+								type="DatePicker"
+								key={index}
+								style={{width: '100%'}}
+								mode="date"
+								//placeholder={''}
+								format="YYYY-MM-DD"
+								minDate="1950-05-01"
+								maxDate="2050-06-01"
+								confirmBtnText="Confirm"
+								cancelBtnText="Cancel"
+							/>
 						</View>
 					) : (
 						<TextInput
-							onFocus={() => setShow(false)}
 							label={element.Name}
 							type="TextInput"
 							name={element.Name}
@@ -166,7 +170,6 @@ const Home = ({navigation}) => {
 				<SafeAreaView>
 					<TouchableOpacity
 						onPress={() => {
-							setShow(false);
 							Keyboard.dismiss();
 						}}>
 						<ScrollView style={StyleSheet.container}>

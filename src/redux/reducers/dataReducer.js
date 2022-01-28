@@ -25,7 +25,6 @@ const getDataField = createAsyncThunk('data/getDataField', async () => {
 	const response = await axios.get(
 		`https://zmssit.crm4.dynamics.com/api/data/v9.1/$metadata#contacts`,
 	);
-
 	return response.data;
 });
 
@@ -35,6 +34,7 @@ let initialState = {
 	authHeader: '',
 	isLoading: true,
 };
+
 export const dataSlice = createSlice({
 	name: 'data',
 	initialState,
@@ -46,18 +46,6 @@ export const dataSlice = createSlice({
 		},
 
 		sendFormData: (state, action) => {
-			for (const key in action.payload) {
-				if (action.payload[key] == '') {
-					delete action.payload[key];
-				}
-				if (!action.payload['fz_title']) {
-					console.log(action.payload['fz_title']);
-					action.payload['fz_title'] = 1;
-				}
-			}
-
-			//console.log(action.payload);
-
 			const URL =
 				'https://zmssit.crm4.dynamics.com/api/data/v9.1/contacts';
 
