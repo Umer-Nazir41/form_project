@@ -1,6 +1,6 @@
 {
-	"name": "MS365_DynamicForm_v1.1",
-	"version": "1.1",
+	"name": "MSDynamics365_DynamicForm",
+	"version": "1.2",
 	"private": true,
 	"scripts": {
 		"android": "react-native run-android",
