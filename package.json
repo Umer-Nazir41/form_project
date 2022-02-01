@@ -10,8 +10,19 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-picker/picker": "^2.2.1",
+    "@react-navigation/native": "^6.0.7",
+    "@react-navigation/native-stack": "^6.3.0",
+    "@redmin_delishaj/react-native-select": "^1.0.6",
+    "@reduxjs/toolkit": "^1.7.1",
+    "axios": "^0.25.0",
     "react": "17.0.2",
-    "react-native": "0.67.2"
+    "react-native": "0.67.2",
+    "react-native-element-dropdown": "^1.6.1",
+    "react-native-paper": "^4.11.2",
+    "react-native-safe-area-context": "^3.3.2",
+    "react-native-screens": "^3.10.2",
+    "react-redux": "^7.2.6"
   },
   "devDependencies": {
     "@babel/core": "^7.16.12",
