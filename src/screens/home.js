@@ -1,6 +1,19 @@
 import React, {useState, useEffect} from 'react';
-import {Alert, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {TextInput, Button, ActivityIndicator} from 'react-native-paper';
+import {
+	Alert,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+	Keyboard,
+	BackHandler,
+} from 'react-native';
+import {
+	TextInput,
+	Button,
+	ActivityIndicator,
+	Divider,
+} from 'react-native-paper';
 import {
 	getAuthToken,
 	getContacts,
@@ -21,6 +34,18 @@ const EmirateData = [
 	{label: 'Unknown', value: 99},
 ];
 
+const backAction = () => {
+	Alert.alert('Hold on!', 'Are you sure you want to Exit?', [
+		{
+			text: 'Cancel',
+			onPress: () => null,
+			style: 'cancel',
+		},
+		{text: 'YES', onPress: () => BackHandler.exitApp()},
+	]);
+	return true;
+};
+
 const Home = () => {
 	const [bankName, setBankName] = useState([]);
 	const [empName, setEmpName] = useState([]);
@@ -37,13 +62,21 @@ const Home = () => {
 	const [Mobile, onChangeMobile] = useState(null);
 	const [additionalInformation, onChangeAdditionalInformation] = useState();
 
+	const [activate, onChangeActivate] = useState(false);
+
 	const dispatch = useDispatch();
 	const {authHeader, bankArray, EmpArray, isLoading} = useSelector(
 		state => state.data,
 	);
 
 	useEffect(() => {
+		const backHandler = BackHandler.addEventListener(
+			'hardwareBackPress',
+			backAction,
+		);
 		dispatch(getAuthToken());
+
+		return () => backHandler.remove();
 	}, []);
 
 	useEffect(() => {
@@ -78,6 +111,8 @@ const Home = () => {
 	}, [EmpArray]);
 
 	const DisplayData = () => {
+		onChangeActivate(true);
+		Keyboard.dismiss();
 		if (
 			selectedBank == null ||
 			selectedEmp == null ||
@@ -85,13 +120,13 @@ const Home = () => {
 			Emirate == null ||
 			Mobile == null
 		) {
-			Alert.alert('Failed', 'Fill all the fields');
+			Alert.alert('Fill All Required Fields');
 		} else {
 			let finalPayload = {
 				jf_jafzalettertype: 0,
 				fz_address: bankAddress,
 				jf_mobileno: '0097150' + Mobile,
-				jf_reasonforrequestadditionalinformation: selectedBankObj.label,
+				jf_reasonforrequestadditionalinformation: additionalInformation,
 				jf_emirate: EmirateObj.value,
 				'fz_contactid@odata.bind': `/contacts(${selectedEmpObj.value})`,
 				'jf_bankname@odata.bind': `/dp_bankdetailses(${selectedBankObj.value})`,
@@ -146,33 +181,63 @@ const Home = () => {
 							textError="Error"
 						/>
 					</View>
-					<View
-						style={{
-							borderWidth: 1,
-							backgroundColor: '#E7E7E7',
-							marginVertical: 10,
-							paddingLeft: 5,
-							paddingTop: 5,
-						}}>
-						<Text>Bank Name</Text>
-						<Dropdown
-							style={
-								(styles.dropdown, {backgroundColor: '#E7E7E7'})
-							}
-							containerStyle={styles.shadow}
-							data={bankName}
-							labelField="label"
-							valueField="value"
-							label="Dropdown"
-							placeholder="Select Bank"
-							value={selectedBank}
-							onChange={item => {
-								setSelectedBank(item.value);
-								setSelectedBankObj(item);
-							}}
-							renderItem={item => _renderItem(item)}
-							textError="Error"
-						/>
+					{activate ? (
+						selectedEmp == null ? (
+							<View style={{backgroundColor: 'red', height: 4}} />
+						) : (
+							<></>
+						)
+					) : (
+						<></>
+					)}
+					<View>
+						<View
+							style={{
+								borderWidth: 1,
+								backgroundColor: '#E7E7E7',
+								marginVertical: 10,
+							}}>
+							<Text style={{paddingLeft: 5, paddingTop: 5}}>
+								Bank Name
+							</Text>
+							<Dropdown
+								style={
+									(styles.dropdown,
+									{
+										backgroundColor: '#E7E7E7',
+										paddingLeft: 5,
+										paddingTop: 5,
+									})
+								}
+								containerStyle={styles.shadow}
+								data={bankName}
+								labelField="label"
+								valueField="value"
+								label="Dropdown"
+								placeholder="Select Bank"
+								value={selectedBank}
+								onChange={item => {
+									setSelectedBank(item.value);
+									setSelectedBankObj(item);
+								}}
+								renderItem={item => _renderItem(item)}
+								textError="Error"
+							/>
+							{activate ? (
+								selectedBank == null ? (
+									<View
+										style={{
+											backgroundColor: 'red',
+											height: 4,
+										}}
+									/>
+								) : (
+									<></>
+								)
+							) : (
+								<></>
+							)}
+						</View>
 					</View>
 					<View
 						style={{
@@ -187,34 +252,65 @@ const Home = () => {
 							//activeUnderlineColor="#E7E7E7"
 						/>
 					</View>
-					<View
-						style={{
-							borderWidth: 1,
-							marginVertical: 10,
-							backgroundColor: '#E7E7E7',
-							paddingLeft: 5,
-							paddingTop: 5,
-						}}>
-						<Text>Emirate</Text>
-						<Dropdown
-							style={
-								(styles.dropdown, {backgroundColor: '#E7E7E7'})
-							}
-							containerStyle={styles.shadow}
-							data={EmirateData}
-							labelField="label"
-							valueField="value"
-							label="Dropdown"
-							placeholder="Select Emirate"
-							value={Emirate}
-							onChange={item => {
-								onChangeEmirate(item.value);
-								onChangeEmirateObj(item);
-							}}
-							renderItem={item => _renderItem(item)}
-							textError="Error"
-						/>
+					{activate ? (
+						bankAddress == null ? (
+							<View style={{backgroundColor: 'red', height: 4}} />
+						) : (
+							<></>
+						)
+					) : (
+						<></>
+					)}
+					<View>
+						<View
+							style={{
+								borderWidth: 1,
+								marginVertical: 10,
+								backgroundColor: '#E7E7E7',
+							}}>
+							<Text style={{paddingLeft: 5, paddingTop: 5}}>
+								Emirate
+							</Text>
+							<Dropdown
+								style={
+									(styles.dropdown,
+									{
+										backgroundColor: '#E7E7E7',
+										paddingLeft: 5,
+										paddingTop: 5,
+									})
+								}
+								containerStyle={styles.shadow}
+								data={EmirateData}
+								labelField="label"
+								valueField="value"
+								label="Dropdown"
+								placeholder="Select Emirate"
+								value={Emirate}
+								onChange={item => {
+									onChangeEmirate(item.value);
+									onChangeEmirateObj(item);
+								}}
+								renderItem={item => _renderItem(item)}
+								textError="Error"
+							/>
+							{activate ? (
+								Emirate == null ? (
+									<View
+										style={{
+											backgroundColor: 'red',
+											height: 4,
+										}}
+									/>
+								) : (
+									<></>
+								)
+							) : (
+								<></>
+							)}
+						</View>
 					</View>
+
 					<View
 						style={{
 							borderColor: '#000',
@@ -271,10 +367,22 @@ const Home = () => {
 								style={{marginVertical: 5}}
 								keyboardType="phone-pad"
 								style={{flex: 1}}
-								activeUnderlineColor="#E7E7E7"
+								//activeUnderlineColor="#E7E7E7"
 							/>
 						</View>
+						{activate ? (
+							Mobile == null ? (
+								<View
+									style={{backgroundColor: 'red', height: 4}}
+								/>
+							) : (
+								<></>
+							)
+						) : (
+							<></>
+						)}
 					</View>
+
 					<View style={{borderColor: '#000', borderWidth: 1}}>
 						<TextInput
 							label="Additional information"
