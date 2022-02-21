@@ -15,7 +15,7 @@ const Login = ({navigation}) => {
 					alignSelf: 'center',
 					marginBottom: '30%',
 				}}>
-				Salary Certificate
+				ZMS Posorja
 			</Text>
 			<TextInput
 				label="Email"

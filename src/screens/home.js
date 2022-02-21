@@ -64,6 +64,8 @@ const Home = () => {
 
 	const [activate, onChangeActivate] = useState(false);
 
+	const [phoneBottomColor, setPhoneBottomColor] = useState(false);
+
 	const dispatch = useDispatch();
 	const {authHeader, bankArray, EmpArray, isLoading} = useSelector(
 		state => state.data,
@@ -149,7 +151,7 @@ const Home = () => {
 			<View style={{alignItems: 'center', padding: 20}}>
 				<Text
 					style={{fontSize: 22, fontWeight: 'bold', color: 'black'}}>
-					Salary Certificate
+					ZMS Posorja
 				</Text>
 			</View>
 			<ScrollView>
@@ -338,7 +340,10 @@ const Home = () => {
 								style={{
 									backgroundColor: '#E7E7E7',
 									height: '100%',
-									borderBottomColor: '#6200EE',
+									borderBottomColor: phoneBottomColor
+										? '#6200EE'
+										: '#B7B7B7',
+									borderBottomWidth: 1.5,
 									justifyContent: 'flex-end',
 									paddingBottom: 22,
 									paddingLeft: 10,
@@ -347,6 +352,7 @@ const Home = () => {
 									style={{
 										color: '#191919',
 										fontSize: 16,
+										borderBottomColor: '#6200EE',
 									}}>
 									0097150
 								</Text>
@@ -355,6 +361,12 @@ const Home = () => {
 							<TextInput
 								value={Mobile}
 								maxLength={7}
+								onFocus={() => {
+									setPhoneBottomColor(true);
+								}}
+								onBlur={() => {
+									setPhoneBottomColor(false);
+								}}
 								onChangeText={
 									text => {
 										text.replace(/[^0-9]/g, '');
